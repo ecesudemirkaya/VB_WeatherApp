@@ -1,14 +1,16 @@
 <resources xmlns:tools="http://schemas.android.com/tools">
     <!-- Base application theme. -->
     <style name="Base.Theme.VB_WeatherApp" parent="Theme.Material3.DayNight.NoActionBar">
+        <item name="android:statusBarColor">@color/cultured</item>
         <!-- Customize your light theme here. -->
         <!-- <item name="colorPrimary">@color/my_light_primary</item> -->
     </style>
 
     <style name="Theme.VB_WeatherApp" parent="Base.Theme.VB_WeatherApp" />
     <style name="Theme.App.SplashScreen" parent="Theme.SplashScreen">
-        <item name="windowSplashScreenBackground">#25124A</item>
-        <item name="windowSplashScreenAnimatedIcon">@drawable/clouds</item>
+        <item name="windowSplashScreenBackground">@color/cultured</item>
+        <item name="windowSplashScreenAnimatedIcon">@drawable/moon</item>
         <item name="postSplashScreenTheme">@style/Base.Theme.VB_WeatherApp</item>
     </style>
+
 </resources>

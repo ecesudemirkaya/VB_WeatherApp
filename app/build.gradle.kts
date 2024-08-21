@@ -33,11 +33,17 @@ android {
     kotlinOptions {
         jvmTarget = "1.8"
     }
+    buildFeatures{
+        viewBinding = true
+    }
 }
 
 dependencies {
 
-    implementation ("androidx.core:core-splashscreen:1.0.1")
+
+    //for splash-screen
+    implementation (libs.androidx.core.splashscreen)
+
     implementation(libs.androidx.core.ktx)
     implementation(libs.androidx.appcompat)
     implementation(libs.material)
@@ -46,4 +52,26 @@ dependencies {
     testImplementation(libs.junit)
     androidTestImplementation(libs.androidx.junit)
     androidTestImplementation(libs.androidx.espresso.core)
+
+    // Scalable Size Unit (support for different screen sizes)
+    implementation(libs.sdp.android)
+    implementation(libs.intuit.ssp.android)
+
+    // Navigation Component
+    implementation(libs.androidx.navigation.fragment.ktx)
+    implementation(libs.androidx.navigation.ui.ktx)
+
+    // Koin (dependency injection)
+    implementation(libs.koin.android)
+
+    //Retrofit
+    implementation(libs.retrofit)
+    implementation(libs.converter.gson)
+
+    //ViewModel
+    implementation(libs.androidx.lifecycle.viewmodel.ktx)
+
+    //Coil
+    implementation(libs.coil)
+
 }
