@@ -3,4 +3,5 @@
     <color name="black">#FF000000</color>
     <color name="white">#FFFFFFFF</color>
     <color name="cultured">#FF8956</color>
+    <color name="textGray">#344A53</color>
 </resources>
