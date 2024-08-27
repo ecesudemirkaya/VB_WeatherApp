@@ -74,4 +74,10 @@ dependencies {
     //Coil
     implementation(libs.coil)
 
+    // Location
+    implementation(libs.play.services.location)
+
+    // Swipe Refresh Layout
+    implementation(libs.androidx.swiperefreshlayout)
+
 }

@@ -10,6 +10,8 @@
         android:layout_height="wrap_content"
         android:layout_marginEnd="@dimen/_4sdp"
         app:layout_goneMarginEnd="@dimen/_4sdp"
+        android:ellipsize="end"
+        android:maxLines="1"
         android:textColor="@color/textGray"
         android:textSize="@dimen/_10ssp"
         app:layout_constraintEnd_toStartOf="@id/currentLocation"
