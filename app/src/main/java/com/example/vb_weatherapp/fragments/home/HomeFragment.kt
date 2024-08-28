@@ -11,6 +11,8 @@ import androidx.activity.result.contract.ActivityResultContracts
 import androidx.appcompat.app.AlertDialog
 import androidx.core.content.ContextCompat
 import androidx.fragment.app.Fragment
+import androidx.navigation.fragment.findNavController
+import com.example.vb_weatherapp.R
 import com.example.vb_weatherapp.data.CurrentLocation
 import com.example.vb_weatherapp.databinding.FragmentHomeBinding
 import com.example.vb_weatherapp.storage.SharedPreferencesManager
@@ -119,6 +121,7 @@ class HomeFragment: Fragment() {
             setItems(options) { _, which ->
                 when (which) {
                     0 -> proceedWithCurrentLocation()
+                    1 -> startManualLocationSearch()
                 }
             }
             show()
@@ -137,6 +140,10 @@ class HomeFragment: Fragment() {
             weatherDataRecyvlerView.visibility = View.VISIBLE
             swipeRefreshLayout.isRefreshing = false
         }
+    }
+
+    private fun startManualLocationSearch (){
+        findNavController().navigate(R.id.action_home_fragment_to_location_fragment)
     }
 
 }
