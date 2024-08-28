@@ -4,12 +4,14 @@ import android.annotation.SuppressLint
 import android.location.Geocoder
 import androidx.navigation.Navigator
 import com.example.vb_weatherapp.data.CurrentLocation
+import com.example.vb_weatherapp.data.RemoteLocation
+import com.example.vb_weatherapp.network.api.WeatherAPI
 import com.google.android.gms.location.FusedLocationProviderClient
 import com.google.android.gms.location.Priority
 import com.google.android.gms.tasks.CancellationTokenSource
 import com.google.android.gms.tasks.OnSuccessListener
 
-class WeatherDataRepository {
+class WeatherDataRepository(private val weatherAPI: WeatherAPI) {
 
     @SuppressLint("MissingPermission")
     fun getCurrentLocation(
@@ -48,6 +50,11 @@ class WeatherDataRepository {
                 location = addressText.toString()
             )
         }?:currentLocation
+    }
+
+    suspend fun searchLocation(query: String): List<RemoteLocation>? {
+        val response = weatherAPI.searchLocation(query = query)
+        return if(response.isSuccessful) response.body() else null
     }
 
 }
