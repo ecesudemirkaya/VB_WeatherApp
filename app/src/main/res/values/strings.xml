@@ -1,4 +1,8 @@
 <resources>
     <string name="app_name">VB_WeatherApp</string>
     <string name="search_name">Arama</string>
+    <string name="_27_u2103">27℃</string>
+    <string name="wind">Wind</string>
+    <string name="humidity">Humidity</string>
+    <string name="chance_of_rain">Chance of rain</string>
 </resources>
