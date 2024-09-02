@@ -8,7 +8,7 @@ import com.example.vb_weatherapp.data.RemoteLocation
 import com.example.vb_weatherapp.network.repository.WeatherDataRepository
 import kotlinx.coroutines.launch
 
-class LocationViewModel(private val weatherDataRepository: WeatherDataRepository): ViewModel() {
+class LocationViewModel(private val weatherDataRepository: WeatherDataRepository) : ViewModel() {
 
     private val _searchResult = MutableLiveData<SearchResultDataState>()
     val searchResult: LiveData<SearchResultDataState> get() = _searchResult
@@ -19,8 +19,7 @@ class LocationViewModel(private val weatherDataRepository: WeatherDataRepository
             val searchResult = weatherDataRepository.searchLocation(query)
             if (searchResult.isNullOrEmpty()) {
                 emitSearchResultUiState(error = "Location not found, please try again.")
-            }
-            else {
+            } else {
                 emitSearchResultUiState(locations = searchResult)
             }
         }
@@ -40,5 +39,4 @@ class LocationViewModel(private val weatherDataRepository: WeatherDataRepository
         val locations: List<RemoteLocation>?,
         val error: String?
     )
-
 }

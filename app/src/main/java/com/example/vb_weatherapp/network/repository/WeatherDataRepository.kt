@@ -2,14 +2,12 @@ package com.example.vb_weatherapp.network.repository
 
 import android.annotation.SuppressLint
 import android.location.Geocoder
-import androidx.navigation.Navigator
 import com.example.vb_weatherapp.data.CurrentLocation
 import com.example.vb_weatherapp.data.RemoteLocation
 import com.example.vb_weatherapp.network.api.WeatherAPI
 import com.google.android.gms.location.FusedLocationProviderClient
 import com.google.android.gms.location.Priority
 import com.google.android.gms.tasks.CancellationTokenSource
-import com.google.android.gms.tasks.OnSuccessListener
 
 class WeatherDataRepository(private val weatherAPI: WeatherAPI) {
 
@@ -54,7 +52,15 @@ class WeatherDataRepository(private val weatherAPI: WeatherAPI) {
 
     suspend fun searchLocation(query: String): List<RemoteLocation>? {
         val response = weatherAPI.searchLocation(query = query)
-        return if(response.isSuccessful) response.body() else null
+        return if (response.isSuccessful) {
+            response.body()?.results?.map { result ->
+                RemoteLocation(
+                    name = result.components.city ?: result.components.state ?: "",
+                    region = result.components.state ?: "",
+                    country = result.components.country,
+                    geometry = result.geometry
+                )
+            }
+        } else null
     }
-
 }

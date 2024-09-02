@@ -1,7 +1,5 @@
 package com.example.vb_weatherapp.data
 
-import android.graphics.drawable.Icon
-import android.health.connect.datatypes.units.Temperature
 import java.text.SimpleDateFormat
 import java.util.Date
 import java.util.Locale
