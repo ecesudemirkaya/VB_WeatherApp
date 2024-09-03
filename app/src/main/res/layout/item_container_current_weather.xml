@@ -19,18 +19,22 @@
         <androidx.appcompat.widget.AppCompatImageView
             android:id="@+id/imageIcon"
             android:layout_width="@dimen/_80sdp"
-            android:layout_height="@dimen/_80sdp"
+            android:layout_height="wrap_content"
+            android:adjustViewBounds="true"
+            android:minHeight="@dimen/_80sdp"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent"/>
 
         <androidx.appcompat.widget.AppCompatTextView
             android:id="@+id/textTemperature"
             android:layout_width="0dp"
-            android:layout_height="0dp"
+            android:layout_height="wrap_content"
             android:layout_marginStart="@dimen/_16sdp"
+            android:ellipsize="end"
             android:gravity="center"
+            android:maxLines="1"
             android:textColor="@color/textGray"
-            android:textSize="@dimen/_56ssp"
+            android:textSize="@dimen/_48ssp"
             android:textStyle="bold"
             app:layout_constraintBottom_toBottomOf="@+id/imageIcon"
             app:layout_constraintEnd_toEndOf="parent"
@@ -55,8 +59,8 @@
             app:strokeWidth="1dp">
 
             <LinearLayout
-                android:layout_width="wrap_content"
-                android:layout_height="match_parent"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
                 android:layout_gravity="center"
                 android:orientation="vertical"
                 android:padding="@dimen/_4sdp">
@@ -64,6 +68,7 @@
                 <androidx.appcompat.widget.AppCompatImageView
                     android:layout_width="@dimen/_22sdp"
                     android:layout_height="@dimen/_22sdp"
+                    android:layout_gravity="center"
                     android:src="@drawable/air" />
 
                 <androidx.appcompat.widget.AppCompatTextView
@@ -80,6 +85,7 @@
                     android:layout_height="wrap_content"
                     android:textColor="@color/textGray"
                     android:textSize="@dimen/_13ssp"
+                    android:layout_gravity="center"
                     android:textStyle="bold"
                     android:text="15 km/h" />
 
@@ -107,8 +113,8 @@
             app:strokeWidth="1dp">
 
             <LinearLayout
-                android:layout_width="wrap_content"
-                android:layout_height="match_parent"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
                 android:layout_gravity="center"
                 android:orientation="vertical"
                 android:padding="@dimen/_4sdp">
@@ -116,7 +122,8 @@
                 <androidx.appcompat.widget.AppCompatImageView
                     android:layout_width="@dimen/_22sdp"
                     android:layout_height="@dimen/_22sdp"
-                    android:src="@drawable/humidity" />
+                    android:src="@drawable/humidity"
+                    android:layout_gravity="center"/>
 
                 <androidx.appcompat.widget.AppCompatTextView
                     android:layout_width="match_parent"
@@ -133,6 +140,7 @@
                     android:textColor="@color/textGray"
                     android:textSize="@dimen/_13ssp"
                     android:textStyle="bold"
+                    android:layout_gravity="center"
                     android:text="24%"/>
 
             </LinearLayout>
@@ -157,8 +165,8 @@
             app:strokeWidth="1dp">
 
             <LinearLayout
-                android:layout_width="wrap_content"
-                android:layout_height="match_parent"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
                 android:layout_gravity="center"
                 android:orientation="vertical"
                 android:padding="@dimen/_4sdp">
@@ -166,6 +174,7 @@
                 <androidx.appcompat.widget.AppCompatImageView
                     android:layout_width="@dimen/_22sdp"
                     android:layout_height="@dimen/_22sdp"
+                    android:layout_gravity="center"
                     android:src="@drawable/rainy" />
 
                 <androidx.appcompat.widget.AppCompatTextView
@@ -181,6 +190,7 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:textColor="@color/textGray"
+                    android:layout_gravity="center"
                     android:textSize="@dimen/_13ssp"
                     android:textStyle="bold"
                     android:text="76%"/>
