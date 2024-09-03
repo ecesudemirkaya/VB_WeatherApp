@@ -17,6 +17,7 @@ import androidx.lifecycle.LifecycleObserver
 import androidx.navigation.fragment.findNavController
 import com.example.vb_weatherapp.R
 import com.example.vb_weatherapp.data.CurrentLocation
+import com.example.vb_weatherapp.data.Forecast
 import com.example.vb_weatherapp.databinding.FragmentHomeBinding
 import com.example.vb_weatherapp.storage.SharedPreferencesManager
 import com.google.android.gms.location.LocationServices
@@ -73,9 +74,16 @@ class HomeFragment: Fragment() {
         super.onViewCreated(view, savedInstanceState)
         setWeatherDataAdapter()
         setObservers()
+        setListeners()
         if (!isInitialLocationSet){
             setCurrentLocation(currentLocation = sharedPreferencesManager.getCurrentLocation())
             isInitialLocationSet = true
+        }
+    }
+
+    private fun setListeners() {
+        binding.swipeRefreshLayout.setOnRefreshListener {
+            setCurrentLocation(sharedPreferencesManager.getCurrentLocation())
         }
     }
 
@@ -102,6 +110,9 @@ class HomeFragment: Fragment() {
                 weatherDataState.currentWeather?.let { currentWeather ->
                         weatherDataAdapter.setCurrentWeather((currentWeather))
                 }
+                weatherDataState.forecast?.let { forecasts ->
+                    weatherDataAdapter.setForecastData(forecasts)
+                }
                 weatherDataState.error?.let { error ->
                     Toast.makeText(requireContext(), error, Toast.LENGTH_SHORT).show()
                 }
@@ -110,6 +121,7 @@ class HomeFragment: Fragment() {
     }
 
     private fun setWeatherDataAdapter() {
+        binding.weatherDataRecyvlerView.itemAnimator = null
         binding.weatherDataRecyvlerView.adapter = weatherDataAdapter
     }
 
@@ -157,6 +169,7 @@ class HomeFragment: Fragment() {
     private fun showLoading() {
         with(binding) {
             weatherDataRecyvlerView.visibility = View.GONE
+            swipeRefreshLayout.isEnabled = false
             swipeRefreshLayout.isRefreshing = true
         }
     }
@@ -164,6 +177,7 @@ class HomeFragment: Fragment() {
     private fun hideLoading() {
         with(binding) {
             weatherDataRecyvlerView.visibility = View.VISIBLE
+            swipeRefreshLayout.isEnabled = true
             swipeRefreshLayout.isRefreshing = false
         }
     }

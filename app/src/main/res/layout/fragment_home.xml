@@ -4,7 +4,8 @@
     android:id="@+id/swipeRefreshLayout"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="@color/cultured">
+    android:background="@color/cultured"
+    android:animateLayoutChanges="true">
 
 
     <androidx.recyclerview.widget.RecyclerView
