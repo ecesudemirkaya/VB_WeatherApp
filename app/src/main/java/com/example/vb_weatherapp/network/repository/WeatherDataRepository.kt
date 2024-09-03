@@ -4,6 +4,7 @@ import android.annotation.SuppressLint
 import android.location.Geocoder
 import com.example.vb_weatherapp.data.CurrentLocation
 import com.example.vb_weatherapp.data.RemoteLocation
+import com.example.vb_weatherapp.data.RemoteWeatherData
 import com.example.vb_weatherapp.network.api.WeatherAPI
 import com.google.android.gms.location.FusedLocationProviderClient
 import com.google.android.gms.location.Priority
@@ -62,5 +63,10 @@ class WeatherDataRepository(private val weatherAPI: WeatherAPI) {
                 )
             }
         } else null
+    }
+
+    suspend fun getWeatherData(latitude:Double, longitude:Double): RemoteWeatherData? {
+        val response = weatherAPI.getWeatherData(query = "$latitude, $longitude")
+        return if (response.isSuccessful) response.body() else null
     }
 }

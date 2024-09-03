@@ -20,6 +20,14 @@ data class Forecast(
     val icon: String
 ) : WeatherData()
 
+data class CurrentWeather(
+    val icon: String,
+    val temperature: Float,
+    val wind: Float,
+    val humidity: Int,
+    val chanceOfRain: Int
+) : WeatherData()
+
 private fun getCurrentDate(): String {
     val currentDate = Date()
     val formatter = SimpleDateFormat("d MMMM yyyy", Locale.getDefault())

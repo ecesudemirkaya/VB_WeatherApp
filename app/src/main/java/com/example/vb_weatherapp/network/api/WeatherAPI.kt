@@ -1,6 +1,7 @@
 package com.example.vb_weatherapp.network.api
 
 import com.example.vb_weatherapp.data.OpenCageResponse
+import com.example.vb_weatherapp.data.RemoteWeatherData
 import retrofit2.Response
 import retrofit2.http.GET
 import retrofit2.http.Query
@@ -11,10 +12,18 @@ interface WeatherAPI {
         const val API_KEY = "f2b62a1d71064240adc17af323c7e1b4"
     }
 
-    @GET("json")
+    @GET("search.json")
     suspend fun searchLocation(
         @Query("key") key: String = API_KEY,
         @Query("q") query: String,
         @Query("limit") limit: Int = 10
     ): Response<OpenCageResponse>
+
+    @GET("forecast.json")
+    suspend fun getWeatherData(
+        @Query("key") key: String = API_KEY,
+        @Query("q") query: String,
+        @Query("limit") limit: Int = 10
+    ):Response<RemoteWeatherData>
+
 }

@@ -13,6 +13,7 @@ import androidx.core.content.ContextCompat
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.clearFragmentResultListener
 import androidx.fragment.app.setFragmentResultListener
+import androidx.lifecycle.LifecycleObserver
 import androidx.navigation.fragment.findNavController
 import com.example.vb_weatherapp.R
 import com.example.vb_weatherapp.data.CurrentLocation
@@ -57,6 +58,8 @@ class HomeFragment: Fragment() {
         }
         }
 
+    private var isInitialLocationSet: Boolean = false
+
     override fun onCreateView(
         inflater: LayoutInflater,
         container: ViewGroup?,
@@ -69,8 +72,11 @@ class HomeFragment: Fragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         setWeatherDataAdapter()
-        setWeatherData(currentLocation = sharedPreferencesManager.getCurrentLocation())
         setObservers()
+        if (!isInitialLocationSet){
+            setCurrentLocation(currentLocation = sharedPreferencesManager.getCurrentLocation())
+            isInitialLocationSet = true
+        }
     }
 
     private fun setObservers() {
@@ -83,10 +89,24 @@ class HomeFragment: Fragment() {
                 currentLocationDataState.currentLocation?.let { currentLocation ->
                     hideLoading()
                     sharedPreferencesManager.saveCurrentLocation(currentLocation)
-                    setWeatherData(currentLocation)
+                    setCurrentLocation(currentLocation)
                 }
                 currentLocationDataState.error?.let { error ->
                     hideLoading()
+                    Toast.makeText(requireContext(), error, Toast.LENGTH_SHORT).show()
+                }
+            }
+            weatherData.observe(viewLifecycleOwner){
+                val weatherDataState = it.getContentIfNotHandled() ?: return@observe
+                binding.swipeRefreshLayout.isRefreshing = weatherDataState.isLoading
+                weatherDataState.currentWeather?.let { currentWeather ->
+                    Toast.makeText(
+                        requireContext(),
+                        currentWeather.temperature.toString(),
+                        Toast.LENGTH_SHORT
+                    ).show()
+                }
+                weatherDataState.error?.let { error ->
                     Toast.makeText(requireContext(), error, Toast.LENGTH_SHORT).show()
                 }
             }
@@ -97,8 +117,9 @@ class HomeFragment: Fragment() {
         binding.weatherDataRecyvlerView.adapter = weatherDataAdapter
     }
 
-    private fun setWeatherData(currentLocation: CurrentLocation? = null) {
-        weatherDataAdapter.setData(data = listOf(currentLocation ?: CurrentLocation()))
+    private fun setCurrentLocation(currentLocation: CurrentLocation? = null) {
+        weatherDataAdapter.setCurrentLocation(currentLocation ?: CurrentLocation())
+        currentLocation?.let { getWeatherData(currentLocation = it) }
     }
 
     private fun getCurrentLocation () {
@@ -165,12 +186,21 @@ class HomeFragment: Fragment() {
             longitude = bundle.getDouble(KEY_LONGITUDE)
             )
             sharedPreferencesManager.saveCurrentLocation(currentLocation)
-            setWeatherData(currentLocation)
+            setCurrentLocation(currentLocation)
         }
     }
 
     private fun stopListeningManualLocationSelection() {
         clearFragmentResultListener(REQUEST_KEY_MANUAL_LOCATION_SEARCH)
+    }
+
+    private fun getWeatherData(currentLocation: CurrentLocation){
+        if(currentLocation.latitude != null  && currentLocation.longitude != null){
+            homeViewModel.getWeatherData(
+                latitude = currentLocation.latitude,
+                longitude = currentLocation.longitude
+            )
+        }
     }
 
 }
