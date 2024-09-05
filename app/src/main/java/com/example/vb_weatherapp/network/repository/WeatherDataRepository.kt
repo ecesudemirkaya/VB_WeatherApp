@@ -39,16 +39,16 @@ class WeatherDataRepository(private val weatherAPI: WeatherAPI) {
     ): CurrentLocation {
         val latitude = currentLocation.latitude ?: return currentLocation
         val longitude = currentLocation.longitude ?: return currentLocation
-        return geocoder.getFromLocation(latitude, longitude,1)?.let { addresses ->
+        return geocoder.getFromLocation(latitude, longitude, 1)?.let { addresses ->
             val address = addresses[0]
             val addressText = StringBuilder()
-            addressText.append(address.locality).append(", ")
-            addressText.append(address.adminArea).append(", ")
-            addressText.append(address.countryName)
+            address.subAdminArea?.let { addressText.append(it).append(", ") }
+            address.adminArea?.let { addressText.append(it).append(", ") }
+            address.countryName?.let { addressText.append(it) }
             currentLocation.copy(
-                location = addressText.toString()
+                location = addressText.toString().trimEnd(',', ' ')
             )
-        }?:currentLocation
+        } ?: currentLocation
     }
 
     suspend fun searchLocation(query: String): List<RemoteLocation>? {

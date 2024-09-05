@@ -29,8 +29,7 @@ class HomeViewModel(private val weatherDataRepository: WeatherDataRepository): V
             emitCurrentLocationUiState(isLoading = true)
             weatherDataRepository.getCurrentLocation(
                 fusedLocationProviderClient = fusedLocationProviderClient,
-                onSuccess = {
-                    currentLocation ->
+                onSuccess = { currentLocation ->
                     updateAddressText(currentLocation, geocoder)
                 },
                 onFailure = {
@@ -124,10 +123,6 @@ class HomeViewModel(private val weatherDataRepository: WeatherDataRepository): V
         val date = pattern.parse(dateTime) ?: return dateTime
         return SimpleDateFormat("HH:mm", Locale.getDefault()).format(date)
     }
-
-
-
-
     //end region Weather Data
 
 }

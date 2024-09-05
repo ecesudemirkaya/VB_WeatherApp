@@ -31,5 +31,5 @@ data class CurrentWeather(
 private fun getCurrentDate(): String {
     val currentDate = Date()
     val formatter = SimpleDateFormat("d MMMM yyyy", Locale.getDefault())
-    return "Today, ${formatter.format(currentDate)}"
+    return formatter.format(currentDate)
 }
