@@ -54,16 +54,5 @@
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintTop_toTopOf="@id/textCurrentDate"/>
 
-    <androidx.appcompat.widget.AppCompatImageView
-        android:id="@+id/imageToggle"
-        android:layout_width="@dimen/_22sdp"
-        android:layout_height="@dimen/_22sdp"
-        android:layout_marginTop="@dimen/_4sdp"
-        android:src="@drawable/toggle"
-        android:tint="@color/textGray"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintBottom_toBottomOf="@id/textCurrentDate"
-        app:layout_constraintTop_toBottomOf="@id/textCurrentDate"/>
-
 
 </androidx.constraintlayout.widget.ConstraintLayout>

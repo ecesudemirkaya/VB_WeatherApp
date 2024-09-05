@@ -7,10 +7,11 @@
     android:layout_marginTop="@dimen/_16sdp"
     android:layout_marginBottom="@dimen/_16sdp"
     app:cardBackgroundColor="@color/cultured_s"
-    app:cardCornerRadius="@dimen/_4sdp"
+    app:cardCornerRadius="@dimen/_16sdp"
     app:cardElevation="0dp"
     app:strokeColor="@color/cultured"
-    app:strokeWidth="1dp">
+    app:strokeWidth="1dp"
+    >
 
     <androidx.constraintlayout.widget.ConstraintLayout
         android:layout_width="match_parent"
