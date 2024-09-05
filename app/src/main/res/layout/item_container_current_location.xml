@@ -18,7 +18,7 @@
         android:textStyle="bold"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
-        android:text="Today, 26 August 2024" />
+        android:text="@string/date" />
 
     <androidx.appcompat.widget.AppCompatImageView
         android:id="@+id/imageLocation"
@@ -43,17 +43,27 @@
         app:layout_constraintEnd_toStartOf="@id/currentLocation"
         app:layout_constraintStart_toEndOf="@id/imageLocation"
         app:layout_constraintTop_toTopOf="@id/imageLocation"
-        android:text="Ümraniye, İstanbul, Türkiye" />
+        android:text="@string/location" />
 
     <androidx.appcompat.widget.AppCompatImageView
         android:id="@+id/currentLocation"
         android:layout_width="@dimen/_22sdp"
         android:layout_height="@dimen/_22sdp"
-        android:src="@drawable/my_location"
         android:tint="@color/textGray"
         app:layout_constraintBottom_toBottomOf="@id/imageLocation"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintTop_toTopOf="@id/textCurrentDate"/>
+
+    <androidx.appcompat.widget.AppCompatImageView
+        android:id="@+id/imageToggle"
+        android:layout_width="@dimen/_22sdp"
+        android:layout_height="@dimen/_22sdp"
+        android:layout_marginTop="@dimen/_4sdp"
+        android:src="@drawable/toggle"
+        android:tint="@color/textGray"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintBottom_toBottomOf="@id/textCurrentDate"
+        app:layout_constraintTop_toBottomOf="@id/textCurrentDate"/>
 
 
 </androidx.constraintlayout.widget.ConstraintLayout>

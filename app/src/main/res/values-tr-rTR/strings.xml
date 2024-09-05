@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="app_name">VB_WeatherApp</string>
+    <string name="_27_u2103">27℃</string>
+    <string name="wind">Rüzgar</string>
+    <string name="humidity">Nem</string>
+    <string name="chance_of_rain">Yağış</string>
+    <string name="search_name">Arama</string>
+    <string name="date">Tarih</string>
+    <string name="location">Konum</string>
+</resources>

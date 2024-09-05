@@ -13,11 +13,9 @@ import androidx.core.content.ContextCompat
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.clearFragmentResultListener
 import androidx.fragment.app.setFragmentResultListener
-import androidx.lifecycle.LifecycleObserver
 import androidx.navigation.fragment.findNavController
 import com.example.vb_weatherapp.R
 import com.example.vb_weatherapp.data.CurrentLocation
-import com.example.vb_weatherapp.data.Forecast
 import com.example.vb_weatherapp.databinding.FragmentHomeBinding
 import com.example.vb_weatherapp.storage.SharedPreferencesManager
 import com.google.android.gms.location.LocationServices
