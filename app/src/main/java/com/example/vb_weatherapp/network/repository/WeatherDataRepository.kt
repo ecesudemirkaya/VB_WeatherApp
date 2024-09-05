@@ -53,16 +53,8 @@ class WeatherDataRepository(private val weatherAPI: WeatherAPI) {
 
     suspend fun searchLocation(query: String): List<RemoteLocation>? {
         val response = weatherAPI.searchLocation(query = query)
-        return if (response.isSuccessful) {
-            response.body()?.results?.map { result ->
-                RemoteLocation(
-                    name = result.components.city ?: result.components.state ?: "",
-                    region = result.components.state ?: "",
-                    country = result.components.country,
-                    geometry = result.geometry
-                )
-            }
-        } else null
+        return if (response.isSuccessful) response.body() else null
+
     }
 
     suspend fun getWeatherData(latitude:Double, longitude:Double): RemoteWeatherData? {
