@@ -44,10 +44,12 @@ class WeatherDataAdapter (
         }
     }
 
-    fun setForecastData(forecast: List<Forecast>) {
+    fun setForecastData(forecasts: List<Forecast>) {
         weatherData.removeAll { it is Forecast }
-        notifyItemRangeChanged(INDEX_FORECAST, weatherData.size)
+        weatherData.addAll(forecasts)
+        notifyItemRangeChanged(INDEX_FORECAST, forecasts.size)
     }
+
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): RecyclerView.ViewHolder {
         return when(viewType) {
@@ -132,8 +134,6 @@ class WeatherDataAdapter (
             with(binding){
                 textTime.text = forecast.time
                 textTemperature.text = String.format("%s\u00B0C", forecast.temperature)
-                textFeelsLikeTemperature.text =
-                    String.format("%s\u00B0C", forecast.feelsLikeTemperature)
                 imageIcon.load("https:${forecast.icon}") { crossfade(true)}
             }
         }

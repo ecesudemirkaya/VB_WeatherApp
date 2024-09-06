@@ -47,25 +47,10 @@
             android:textColor="@color/textGray"
             android:textSize="@dimen/_12ssp"
             app:layout_constraintBottom_toBottomOf="parent"
-            app:layout_constraintEnd_toStartOf="@+id/textFeelsLikeTemperature"
             app:layout_constraintStart_toEndOf="@id/textTime"
+            app:layout_constraintEnd_toStartOf="@id/imageIcon"
             app:layout_constraintTop_toTopOf="parent"
             tools:text="27\u00B0C" />
-
-        <androidx.appcompat.widget.AppCompatTextView
-            android:id="@+id/textFeelsLikeTemperature"
-            android:layout_width="0dp"
-            android:layout_height="wrap_content"
-            android:layout_marginStart="@dimen/_8sdp"
-            android:layout_marginEnd="@dimen/_8sdp"
-            android:gravity="start"
-            android:textColor="@color/sonicSilver"
-            android:textSize="@dimen/_12ssp"
-            app:layout_constraintBottom_toBottomOf="parent"
-            app:layout_constraintEnd_toStartOf="@id/imageIcon"
-            app:layout_constraintStart_toEndOf="@id/textTemperature"
-            app:layout_constraintTop_toTopOf="parent"
-            tools:text="35\u00B0C"/>
 
     </androidx.constraintlayout.widget.ConstraintLayout>
 
