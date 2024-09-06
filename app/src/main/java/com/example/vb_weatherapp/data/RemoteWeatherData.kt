@@ -1,6 +1,5 @@
 package com.example.vb_weatherapp.data
 
-import android.health.connect.datatypes.units.Temperature
 import com.google.gson.annotations.SerializedName
 
 data class RemoteWeatherData(
@@ -20,12 +19,15 @@ data class ForecastRemote(
 )
 
 data class ForecastDayRemote(
+    @SerializedName("date") val date: String,
     val day: DayRemote,
     val hour: List<ForecastHourRemote>
 )
 
 data class DayRemote(
-    @SerializedName("daily_chance_of_rain") val chanceOfRain: Int
+    @SerializedName("avgtemp_c") val avgTemp: Float,
+    @SerializedName("daily_chance_of_rain") val chanceOfRain: Int,
+    val condition: WeatherConditionRemote
 )
 
 data class ForecastHourRemote(

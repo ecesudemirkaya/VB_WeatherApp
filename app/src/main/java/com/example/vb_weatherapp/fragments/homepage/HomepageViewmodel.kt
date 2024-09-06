@@ -1,4 +1,4 @@
-package com.example.vb_weatherapp.fragments.home
+package com.example.vb_weatherapp.fragments.homepage
 
 import android.location.Geocoder
 import androidx.lifecycle.LiveData
@@ -15,7 +15,7 @@ import kotlinx.coroutines.launch
 import java.text.SimpleDateFormat
 import java.util.Locale
 
-class HomeViewModel(private val weatherDataRepository: WeatherDataRepository): ViewModel() {
+class HomepageViewModel(private val weatherDataRepository: WeatherDataRepository): ViewModel() {
 
     //region Current Location
     private val _currentLocation = MutableLiveData<LiveDataEvent<CurrentLocationDataState>>()
@@ -45,15 +45,15 @@ class HomeViewModel(private val weatherDataRepository: WeatherDataRepository): V
                 weatherDataRepository.updateAddressText(currentLocation, geocoder)
             }.onSuccess { location ->
                 emitCurrentLocationUiState(currentLocation = location)
-        }.onFailure {
-            emitCurrentLocationUiState(
-                currentLocation = currentLocation.copy(
-                    location = "N/A"
+            }.onFailure {
+                emitCurrentLocationUiState(
+                    currentLocation = currentLocation.copy(
+                        location = "N/A"
+                    )
                 )
-            )
             }
-    }
         }
+    }
     private fun emitCurrentLocationUiState(
         isLoading: Boolean = false,
         currentLocation: CurrentLocation? = null,
@@ -76,7 +76,7 @@ class HomeViewModel(private val weatherDataRepository: WeatherDataRepository): V
     private val _weatherData = MutableLiveData<LiveDataEvent<WeatherDataState>>()
     val weatherData: LiveData<LiveDataEvent<WeatherDataState>> get() = _weatherData
 
-    fun getWeatherData(latitude: Double, longitude: Double){
+    fun getWeatherData(latitude: Double, longitude: Double) {
         viewModelScope.launch {
             emitWeatherDataUiState(isLoading = true)
             weatherDataRepository.getWeatherData(latitude, longitude)?.let { weatherData ->
@@ -88,17 +88,18 @@ class HomeViewModel(private val weatherDataRepository: WeatherDataRepository): V
                         humidity = weatherData.current.humidity,
                         chanceOfRain = weatherData.forecast.forecastDay.first().day.chanceOfRain
                     ),
-                    forecast = weatherData.forecast.forecastDay.first().hour.map {
+                    forecast = weatherData.forecast.forecastDay.map { dayForecast ->
                         Forecast(
-                            time = getForecastTime(it.time),
-                            temperature = it.temperature,
-                            icon = it.condition.icon
+                            time = dayForecast.date,
+                            temperature = dayForecast.day.avgTemp,
+                            icon = dayForecast.day.condition.icon
                         )
                     }
-                        )
+                )
             } ?: emitWeatherDataUiState(error = "Unable to fetch weather data")
         }
     }
+
 
     private fun emitWeatherDataUiState(
         isLoading: Boolean = false,
@@ -117,7 +118,7 @@ class HomeViewModel(private val weatherDataRepository: WeatherDataRepository): V
         val error: String?
     )
 
-    private fun getForecastTime(dateTime:String): String{
+    private fun getForecast(dateTime:String): String{
         val pattern = SimpleDateFormat("yyyy-MM-dd HH:mm", Locale.getDefault())
         val date = pattern.parse(dateTime) ?: return dateTime
         return SimpleDateFormat("HH:mm", Locale.getDefault()).format(date)

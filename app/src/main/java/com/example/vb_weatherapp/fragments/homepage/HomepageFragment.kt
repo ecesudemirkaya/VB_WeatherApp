@@ -1,5 +1,6 @@
 package com.example.vb_weatherapp.fragments.homepage
 
+import android.Manifest
 import android.content.pm.PackageManager
 import android.location.Geocoder
 import android.os.Bundle
@@ -16,9 +17,7 @@ import androidx.fragment.app.setFragmentResultListener
 import androidx.navigation.fragment.findNavController
 import com.example.vb_weatherapp.R
 import com.example.vb_weatherapp.data.CurrentLocation
-import com.example.vb_weatherapp.databinding.FragmentHomeBinding
 import com.example.vb_weatherapp.databinding.FragmentHomepageBinding
-import com.example.vb_weatherapp.fragments.home.HomeViewModel
 import com.example.vb_weatherapp.fragments.home.WeatherDataAdapter
 import com.example.vb_weatherapp.storage.SharedPreferencesManager
 import com.google.android.gms.location.LocationServices
@@ -37,7 +36,7 @@ class HomepageFragment: Fragment() {
     private var _binding: FragmentHomepageBinding? = null
     private val binding get() = requireNotNull(_binding)
 
-    private val homeViewModel: HomeViewModel by viewModel()
+    private val homeViewModel: HomepageViewModel by viewModel()
     private val fusedLocationProviderClient by lazy {
         LocationServices.getFusedLocationProviderClient(requireContext())
     }
@@ -137,12 +136,12 @@ class HomepageFragment: Fragment() {
 
     private fun isLocationPermissionGranted(): Boolean {
         return ContextCompat.checkSelfPermission(
-            requireContext(), android.Manifest.permission.ACCESS_FINE_LOCATION
+            requireContext(), Manifest.permission.ACCESS_FINE_LOCATION
         ) == PackageManager.PERMISSION_GRANTED
     }
 
     private fun requestLocationPermission() {
-        locationPermissionLauncher.launch(android.Manifest.permission.ACCESS_FINE_LOCATION)
+        locationPermissionLauncher.launch(Manifest.permission.ACCESS_FINE_LOCATION)
     }
 
     private fun proceedWithCurrentLocation() {
@@ -205,8 +204,8 @@ class HomepageFragment: Fragment() {
         clearFragmentResultListener(REQUEST_KEY_MANUAL_LOCATION_SEARCH)
     }
 
-    private fun getWeatherData(currentLocation: CurrentLocation){
-        if(currentLocation.latitude != null  && currentLocation.longitude != null){
+    private fun getWeatherData(currentLocation: CurrentLocation) {
+        if (currentLocation.latitude != null && currentLocation.longitude != null) {
             homeViewModel.getWeatherData(
                 latitude = currentLocation.latitude,
                 longitude = currentLocation.longitude

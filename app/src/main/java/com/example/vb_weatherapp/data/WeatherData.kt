@@ -16,7 +16,6 @@ data class CurrentLocation(
 data class Forecast(
     val time: String,
     val temperature: Float,
-    val feelsLikeTemperature: Float,
     val icon: String
 ) : WeatherData()
 
