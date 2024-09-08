@@ -27,8 +27,25 @@ data class CurrentWeather(
     val chanceOfRain: Int
 ) : WeatherData()
 
+data class DailyForecast(
+    val date: String,
+    val dayOfWeek: String,
+    val avgTemp: Float,
+    val minTemp: Float,
+    val maxTemp: Float,
+    val icon: String,
+    val chanceOfRain: Int
+) : WeatherData()
+
 private fun getCurrentDate(): String {
     val currentDate = Date()
     val formatter = SimpleDateFormat("d MMMM yyyy", Locale.getDefault())
     return formatter.format(currentDate)
+}
+
+fun String.toDayOfWeek(): String {
+    val inputFormat = SimpleDateFormat("yyyy-MM-dd", Locale.getDefault())
+    val outputFormat = SimpleDateFormat("EEEE", Locale.getDefault())
+    val date = inputFormat.parse(this)
+    return date?.let { outputFormat.format(it) } ?: this
 }

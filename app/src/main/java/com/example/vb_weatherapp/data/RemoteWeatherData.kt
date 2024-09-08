@@ -26,6 +26,8 @@ data class ForecastDayRemote(
 
 data class DayRemote(
     @SerializedName("avgtemp_c") val avgTemp: Float,
+    @SerializedName("mintemp_c") val minTemp: Float,
+    @SerializedName("maxtemp_c") val maxTemp: Float,
     @SerializedName("daily_chance_of_rain") val chanceOfRain: Int,
     val condition: WeatherConditionRemote
 )

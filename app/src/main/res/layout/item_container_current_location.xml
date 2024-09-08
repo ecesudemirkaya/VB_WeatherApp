@@ -50,6 +50,7 @@
         android:layout_width="@dimen/_22sdp"
         android:layout_height="@dimen/_22sdp"
         android:tint="@color/textGray"
+        android:src="@drawable/location_searching"
         app:layout_constraintBottom_toBottomOf="@id/imageLocation"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintTop_toTopOf="@id/textCurrentDate"/>

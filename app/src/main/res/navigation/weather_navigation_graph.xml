@@ -5,7 +5,6 @@
     android:id="@+id/weather_navigation_graph"
     app:startDestination="@id/homepageFragment">
 
-    <!-- Homepage Fragment -->
     <fragment
         android:id="@+id/homepageFragment"
         android:name="com.example.vb_weatherapp.fragments.homepage.HomepageFragment"

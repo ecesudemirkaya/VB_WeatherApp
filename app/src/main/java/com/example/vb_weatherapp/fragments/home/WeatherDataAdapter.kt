@@ -6,6 +6,7 @@ import androidx.recyclerview.widget.RecyclerView
 import coil.load
 import com.example.vb_weatherapp.data.CurrentLocation
 import com.example.vb_weatherapp.data.CurrentWeather
+import com.example.vb_weatherapp.data.DailyForecast
 import com.example.vb_weatherapp.data.Forecast
 import com.example.vb_weatherapp.data.WeatherData
 import com.example.vb_weatherapp.databinding.ItemContainerCurrentLocationBinding
@@ -20,6 +21,7 @@ class WeatherDataAdapter (
             const val INDEX_CURRENT_LOCATION = 0
             const val INDEX_CURRENT_WEATHER = 1
             const val INDEX_FORECAST = 2
+            const val INDEX_DAILY_FORECAST =3
         }
 
     private val weatherData = mutableListOf<WeatherData>()
@@ -96,6 +98,7 @@ class WeatherDataAdapter (
             is CurrentLocation -> INDEX_CURRENT_LOCATION
             is CurrentWeather -> INDEX_CURRENT_WEATHER
             is Forecast -> INDEX_FORECAST
+            is DailyForecast -> INDEX_DAILY_FORECAST
         }
     }
 

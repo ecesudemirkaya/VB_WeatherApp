@@ -7,19 +7,26 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.vb_weatherapp.data.CurrentLocation
 import com.example.vb_weatherapp.data.CurrentWeather
+import com.example.vb_weatherapp.data.DailyForecast
 import com.example.vb_weatherapp.data.Forecast
 import com.example.vb_weatherapp.data.LiveDataEvent
+import com.example.vb_weatherapp.data.toDayOfWeek
 import com.example.vb_weatherapp.network.repository.WeatherDataRepository
 import com.google.android.gms.location.FusedLocationProviderClient
 import kotlinx.coroutines.launch
 import java.text.SimpleDateFormat
 import java.util.Locale
 
-class HomepageViewModel(private val weatherDataRepository: WeatherDataRepository): ViewModel() {
+class HomepageViewModel(private val weatherDataRepository: WeatherDataRepository) : ViewModel() {
 
-    //region Current Location
     private val _currentLocation = MutableLiveData<LiveDataEvent<CurrentLocationDataState>>()
     val currentLocation: LiveData<LiveDataEvent<CurrentLocationDataState>> get() = _currentLocation
+
+    private val _weatherData = MutableLiveData<LiveDataEvent<WeatherDataState>>()
+    val weatherData: LiveData<LiveDataEvent<WeatherDataState>> get() = _weatherData
+
+    private val _dailyForecast = MutableLiveData<LiveDataEvent<DailyForecastDataState>>()
+    val dailyForecast: LiveData<LiveDataEvent<DailyForecastDataState>> get() = _dailyForecast
 
     fun getCurrentLocation(
         fusedLocationProviderClient: FusedLocationProviderClient,
@@ -39,7 +46,7 @@ class HomepageViewModel(private val weatherDataRepository: WeatherDataRepository
         }
     }
 
-    private fun updateAddressText(currentLocation: CurrentLocation, geocoder: Geocoder){
+    private fun updateAddressText(currentLocation: CurrentLocation, geocoder: Geocoder) {
         viewModelScope.launch {
             runCatching {
                 weatherDataRepository.updateAddressText(currentLocation, geocoder)
@@ -54,27 +61,6 @@ class HomepageViewModel(private val weatherDataRepository: WeatherDataRepository
             }
         }
     }
-    private fun emitCurrentLocationUiState(
-        isLoading: Boolean = false,
-        currentLocation: CurrentLocation? = null,
-        error: String? = null
-    ){
-        val currentLocationDataState = CurrentLocationDataState(isLoading, currentLocation, error)
-        _currentLocation.value = LiveDataEvent(currentLocationDataState)
-    }
-
-    data class CurrentLocationDataState(
-        val isLoading: Boolean,
-        val currentLocation: CurrentLocation?,
-        val error: String?
-    )
-    //end Region Current Location
-
-
-    //region Weather Data
-
-    private val _weatherData = MutableLiveData<LiveDataEvent<WeatherDataState>>()
-    val weatherData: LiveData<LiveDataEvent<WeatherDataState>> get() = _weatherData
 
     fun getWeatherData(latitude: Double, longitude: Double) {
         viewModelScope.launch {
@@ -88,11 +74,11 @@ class HomepageViewModel(private val weatherDataRepository: WeatherDataRepository
                         humidity = weatherData.current.humidity,
                         chanceOfRain = weatherData.forecast.forecastDay.first().day.chanceOfRain
                     ),
-                    forecast = weatherData.forecast.forecastDay.map { dayForecast ->
+                    forecast = weatherData.forecast.forecastDay.first().hour.map {
                         Forecast(
-                            time = dayForecast.date,
-                            temperature = dayForecast.day.avgTemp,
-                            icon = dayForecast.day.condition.icon
+                            time = getForecastTime(it.time),
+                            temperature = it.temperature,
+                            icon = it.condition.icon
                         )
                     }
                 )
@@ -100,6 +86,35 @@ class HomepageViewModel(private val weatherDataRepository: WeatherDataRepository
         }
     }
 
+    fun getDailyForecast(latitude: Double, longitude: Double) {
+        viewModelScope.launch {
+            emitDailyForecastUiState(isLoading = true)
+            weatherDataRepository.getWeeklyForecast(latitude, longitude)?.let { weatherData ->
+                emitDailyForecastUiState(
+                    forecast = weatherData.forecast.forecastDay.map { day ->
+                        DailyForecast(
+                            date = day.date,
+                            dayOfWeek = day.date.toDayOfWeek(),
+                            avgTemp = day.day.avgTemp,
+                            minTemp = day.day.minTemp,
+                            maxTemp = day.day.maxTemp,
+                            icon = day.day.condition.icon,
+                            chanceOfRain = day.day.chanceOfRain
+                        )
+                    }
+                )
+            } ?: emitDailyForecastUiState(error = "Unable to fetch daily forecast")
+        }
+    }
+
+    private fun emitCurrentLocationUiState(
+        isLoading: Boolean = false,
+        currentLocation: CurrentLocation? = null,
+        error: String? = null
+    ) {
+        val currentLocationDataState = CurrentLocationDataState(isLoading, currentLocation, error)
+        _currentLocation.value = LiveDataEvent(currentLocationDataState)
+    }
 
     private fun emitWeatherDataUiState(
         isLoading: Boolean = false,
@@ -111,6 +126,27 @@ class HomepageViewModel(private val weatherDataRepository: WeatherDataRepository
         _weatherData.value = LiveDataEvent(weatherDataState)
     }
 
+    private fun emitDailyForecastUiState(
+        isLoading: Boolean = false,
+        forecast: List<DailyForecast>? = null,
+        error: String? = null
+    ) {
+        val dailyForecastDataState = DailyForecastDataState(isLoading, forecast, error)
+        _dailyForecast.value = LiveDataEvent(dailyForecastDataState)
+    }
+
+    private fun getForecastTime(dateTime: String): String {
+        val pattern = SimpleDateFormat("yyyy-MM-dd HH:mm", Locale.getDefault())
+        val date = pattern.parse(dateTime) ?: return dateTime
+        return SimpleDateFormat("HH:mm", Locale.getDefault()).format(date)
+    }
+
+    data class CurrentLocationDataState(
+        val isLoading: Boolean,
+        val currentLocation: CurrentLocation?,
+        val error: String?
+    )
+
     data class WeatherDataState(
         val isLoading: Boolean,
         val currentWeather: CurrentWeather?,
@@ -118,11 +154,9 @@ class HomepageViewModel(private val weatherDataRepository: WeatherDataRepository
         val error: String?
     )
 
-    private fun getForecast(dateTime:String): String{
-        val pattern = SimpleDateFormat("yyyy-MM-dd HH:mm", Locale.getDefault())
-        val date = pattern.parse(dateTime) ?: return dateTime
-        return SimpleDateFormat("HH:mm", Locale.getDefault()).format(date)
-    }
-    //end region Weather Data
-
+    data class DailyForecastDataState(
+        val isLoading: Boolean,
+        val forecast: List<DailyForecast>?,
+        val error: String?
+    )
 }

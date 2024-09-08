@@ -1,9 +1,10 @@
 <?xml version="1.0" encoding="utf-8"?>
-<com.google.android.material.card.MaterialCardView xmlns:android="http://schemas.android.com/apk/res/android"
-    android:layout_width="match_parent"
-    android:layout_height="wrap_content"
+<com.google.android.material.card.MaterialCardView
+    xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
     android:layout_marginTop="@dimen/_4sdp"
     android:layout_marginBottom="@dimen/_4sdp"
     app:cardBackgroundColor="@color/cultured"
@@ -15,7 +16,7 @@
     <androidx.constraintlayout.widget.ConstraintLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:padding="8dp">
+        android:padding="@dimen/_8sdp">
 
         <androidx.appcompat.widget.AppCompatTextView
             android:id="@+id/textDate"
@@ -50,7 +51,7 @@
             app:layout_constraintStart_toEndOf="@id/textDate"
             app:layout_constraintEnd_toStartOf="@id/imageIcon"
             app:layout_constraintTop_toTopOf="parent"
-            tools:text="27\u00B0C" />
+            tools:text="15°C / 27°C" />
 
     </androidx.constraintlayout.widget.ConstraintLayout>
 

@@ -2,141 +2,48 @@ package com.example.vb_weatherapp.fragments.homepage
 
 import android.view.LayoutInflater
 import android.view.ViewGroup
+import androidx.recyclerview.widget.DiffUtil
+import androidx.recyclerview.widget.ListAdapter
 import androidx.recyclerview.widget.RecyclerView
+import com.example.vb_weatherapp.data.DailyForecast
 import coil.load
-import com.example.vb_weatherapp.data.CurrentLocation
-import com.example.vb_weatherapp.data.CurrentWeather
-import com.example.vb_weatherapp.data.Forecast
-import com.example.vb_weatherapp.data.WeatherData
-import com.example.vb_weatherapp.databinding.ItemContainerCurrentLocationBinding
-import com.example.vb_weatherapp.databinding.ItemContainerCurrentWeatherBinding
-import com.example.vb_weatherapp.databinding.ItemContainerForecastBinding
+import com.example.vb_weatherapp.databinding.ItemContainerForecastDailyBinding
 
-class WeatherDataAdapterHomepage (
-    private val onLocationClicked: () -> Unit
-) : RecyclerView.Adapter <RecyclerView.ViewHolder> () {
+class WeatherDataAdapterHomepage(
+    private val onItemClick: (DailyForecast) -> Unit
+) : ListAdapter<DailyForecast, WeatherDataAdapterHomepage.ViewHolder>(DailyForecastDiffCallback()) {
 
-    private companion object {
-        const val INDEX_CURRENT_LOCATION = 0
-        const val INDEX_CURRENT_WEATHER = 1
-        const val INDEX_FORECAST = 2
+    override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ViewHolder {
+        val binding = ItemContainerForecastDailyBinding.inflate(LayoutInflater.from(parent.context), parent, false)
+        return ViewHolder(binding)
     }
 
-    private val weatherData = mutableListOf<WeatherData>()
-
-    fun setCurrentLocation(currentLocation: CurrentLocation){
-        if (weatherData.isEmpty()){
-            weatherData.add(INDEX_CURRENT_LOCATION, currentLocation)
-            notifyItemInserted(INDEX_CURRENT_LOCATION)
-        } else {
-            weatherData[INDEX_CURRENT_LOCATION] = currentLocation
-            notifyItemChanged(INDEX_CURRENT_LOCATION)
-        }
+    override fun onBindViewHolder(holder: ViewHolder, position: Int) {
+        holder.bind(getItem(position))
     }
 
-    fun setCurrentWeather(currentWeather: CurrentWeather) {
-        if (weatherData.getOrNull(INDEX_CURRENT_WEATHER) != null){
-            weatherData[INDEX_CURRENT_WEATHER] = currentWeather
-            notifyItemChanged(INDEX_CURRENT_WEATHER)
-        } else {
-            weatherData.add(INDEX_CURRENT_WEATHER, currentWeather)
-            notifyItemInserted(INDEX_CURRENT_WEATHER)
-        }
-    }
-
-    fun setForecastData(forecasts: List<Forecast>) {
-        weatherData.removeAll { it is Forecast }
-        weatherData.addAll(forecasts)
-        notifyItemRangeChanged(INDEX_FORECAST, forecasts.size)
-    }
-
-
-    override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): RecyclerView.ViewHolder {
-        return when(viewType) {
-            INDEX_CURRENT_LOCATION ->CurrentLocationViewHolder(
-                ItemContainerCurrentLocationBinding.inflate(
-                    LayoutInflater.from(parent.context),
-                    parent,
-                    false
-                )
-            )
-            INDEX_FORECAST -> ForecastViewHolder(
-                ItemContainerForecastBinding.inflate(
-                    LayoutInflater.from(parent.context),
-                    parent,
-                    false
-                )
-            )
-
-            else -> CurrentWeatherViewHolder(
-                ItemContainerCurrentWeatherBinding.inflate(
-                    LayoutInflater.from(parent.context),
-                    parent,
-                    false
-                )
-            )
-        }
-    }
-
-    override fun onBindViewHolder(holder: RecyclerView.ViewHolder, position: Int) {
-        when(holder) {
-            is CurrentLocationViewHolder -> holder.bind(weatherData[position] as CurrentLocation)
-            is CurrentWeatherViewHolder -> holder.bind(weatherData[position] as CurrentWeather)
-            is ForecastViewHolder -> holder.bind(weatherData[position] as Forecast)
-        }
-
-    }
-
-    override fun getItemCount(): Int {
-        return weatherData.size
-    }
-
-    override fun getItemViewType(position: Int): Int {
-        return when(weatherData[position]) {
-            is CurrentLocation -> INDEX_CURRENT_LOCATION
-            is CurrentWeather -> INDEX_CURRENT_WEATHER
-            is Forecast -> INDEX_FORECAST
-        }
-    }
-
-    inner class CurrentLocationViewHolder(
-        private val binding: ItemContainerCurrentLocationBinding
-    ): RecyclerView.ViewHolder(binding.root) {
-        fun bind(currentLocation: CurrentLocation) {
-            with(binding){
-                textCurrentDate.text = currentLocation.date
-                textCurrentLocation.text = currentLocation.location
-                imageLocation.setOnClickListener { onLocationClicked() }
-                textCurrentLocation.setOnClickListener { onLocationClicked() }
+    inner class ViewHolder(private val binding: ItemContainerForecastDailyBinding) : RecyclerView.ViewHolder(binding.root) {
+        fun bind(forecast: DailyForecast) {
+            binding.apply {
+                textDate.text = forecast.dayOfWeek
+                textTemperature.text = "${forecast.minTemp.toInt()}°C / ${forecast.maxTemp.toInt()}°C"
+                imageIcon.load("https:${forecast.icon}") {
+                    crossfade(true)
+                    placeholder(android.R.drawable.ic_menu_gallery)
+                    error(android.R.drawable.ic_menu_report_image)
+                }
+                root.setOnClickListener { onItemClick(forecast) }
             }
         }
     }
 
-    inner class CurrentWeatherViewHolder(
-        private val binding: ItemContainerCurrentWeatherBinding
-    ) : RecyclerView.ViewHolder(binding.root) {
-        fun bind(currentWeather: CurrentWeather) {
-            with(binding) {
-                imageIcon.load("https:${currentWeather.icon}") { crossfade(true) }
-                textTemperature.text = String.format("%s\u00B0C", currentWeather.temperature)
-                textWind.text = String.format("%s km/h", currentWeather.wind)
-                textHumidity.text = String.format("%s%%", currentWeather.humidity)
-                textChanceOfRain.text = String.format("%s%%", currentWeather.chanceOfRain)
-            }
+    class DailyForecastDiffCallback : DiffUtil.ItemCallback<DailyForecast>() {
+        override fun areItemsTheSame(oldItem: DailyForecast, newItem: DailyForecast): Boolean {
+            return oldItem.date == newItem.date
         }
 
-    }
-
-    inner class ForecastViewHolder(
-        private val binding: ItemContainerForecastBinding
-    ) : RecyclerView.ViewHolder(binding.root) {
-        fun bind(forecast: Forecast) {
-            with(binding){
-                textTime.text = forecast.time
-                textTemperature.text = String.format("%s\u00B0C", forecast.temperature)
-                imageIcon.load("https:${forecast.icon}") { crossfade(true)}
-            }
+        override fun areContentsTheSame(oldItem: DailyForecast, newItem: DailyForecast): Boolean {
+            return oldItem == newItem
         }
     }
 }
-

@@ -22,6 +22,6 @@ interface WeatherAPI {
     suspend fun getWeatherData(
         @Query("key") key: String = API_KEY,
         @Query("q") query: String,
-    ):Response<RemoteWeatherData>
-
+        @Query("days") days: Int = 1
+    ): Response<RemoteWeatherData>
 }

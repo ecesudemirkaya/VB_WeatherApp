@@ -15,16 +15,21 @@ import androidx.fragment.app.Fragment
 import androidx.fragment.app.clearFragmentResultListener
 import androidx.fragment.app.setFragmentResultListener
 import androidx.navigation.fragment.findNavController
+import androidx.recyclerview.widget.LinearLayoutManager
+import coil.load
 import com.example.vb_weatherapp.R
 import com.example.vb_weatherapp.data.CurrentLocation
+import com.example.vb_weatherapp.data.CurrentWeather
+import com.example.vb_weatherapp.data.DailyForecast
 import com.example.vb_weatherapp.databinding.FragmentHomepageBinding
-import com.example.vb_weatherapp.fragments.home.WeatherDataAdapter
 import com.example.vb_weatherapp.storage.SharedPreferencesManager
 import com.google.android.gms.location.LocationServices
 import org.koin.android.ext.android.inject
 import org.koin.androidx.viewmodel.ext.android.viewModel
+import java.text.SimpleDateFormat
+import java.util.*
 
-class HomepageFragment: Fragment() {
+class HomepageFragment : Fragment() {
 
     companion object {
         const val REQUEST_KEY_MANUAL_LOCATION_SEARCH = "manualLocationSearch"
@@ -41,21 +46,21 @@ class HomepageFragment: Fragment() {
         LocationServices.getFusedLocationProviderClient(requireContext())
     }
 
-    private val geocoder by lazy{ Geocoder(requireContext()) }
+    private val geocoder by lazy { Geocoder(requireContext()) }
 
-    private val weatherDataAdapter = WeatherDataAdapter(
-        onLocationClicked = { showLocationOptions() }
-    )
+    private val weatherDataAdapterHomepage = WeatherDataAdapterHomepage { dailyForecast ->
+        navigateToHourlyForecast(dailyForecast)
+    }
 
     private val sharedPreferencesManager: SharedPreferencesManager by inject()
 
     private val locationPermissionLauncher = registerForActivityResult(
         ActivityResultContracts.RequestPermission()
     ) { isGranted ->
-        if(isGranted) {
+        if (isGranted) {
             getCurrentLocation()
         } else {
-            Toast.makeText((requireContext()), "Permission denied", Toast.LENGTH_SHORT).show()
+            Toast.makeText(requireContext(), "Permission denied", Toast.LENGTH_SHORT).show()
         }
     }
 
@@ -66,16 +71,17 @@ class HomepageFragment: Fragment() {
         container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View {
-        _binding = FragmentHomepageBinding.inflate(inflater,container,false)
+        _binding = FragmentHomepageBinding.inflate(inflater, container, false)
         return binding.root
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-        setWeatherDataAdapter()
+        setDailyForecastAdapter()
         setObservers()
         setListeners()
-        if (!isInitialLocationSet){
+        updateDateAndLocation()
+        if (!isInitialLocationSet) {
             setCurrentLocation(currentLocation = sharedPreferencesManager.getCurrentLocation())
             isInitialLocationSet = true
         }
@@ -85,13 +91,16 @@ class HomepageFragment: Fragment() {
         binding.swipeRefreshLayout.setOnRefreshListener {
             setCurrentLocation(sharedPreferencesManager.getCurrentLocation())
         }
+        binding.currentLocation.setOnClickListener {
+            showLocationOptions()
+        }
     }
 
     private fun setObservers() {
         with(homeViewModel) {
             currentLocation.observe(viewLifecycleOwner) {
                 val currentLocationDataState = it.getContentIfNotHandled() ?: return@observe
-                if(currentLocationDataState.isLoading) {
+                if (currentLocationDataState.isLoading) {
                     showLoading()
                 }
                 currentLocationDataState.currentLocation?.let { currentLocation ->
@@ -104,33 +113,43 @@ class HomepageFragment: Fragment() {
                     Toast.makeText(requireContext(), error, Toast.LENGTH_SHORT).show()
                 }
             }
-            weatherData.observe(viewLifecycleOwner){
+            weatherData.observe(viewLifecycleOwner) {
                 val weatherDataState = it.getContentIfNotHandled() ?: return@observe
                 binding.swipeRefreshLayout.isRefreshing = weatherDataState.isLoading
                 weatherDataState.currentWeather?.let { currentWeather ->
-                    weatherDataAdapter.setCurrentWeather((currentWeather))
-                }
-                weatherDataState.forecast?.let { forecasts ->
-                    weatherDataAdapter.setForecastData(forecasts)
+                    updateCurrentWeatherUI(currentWeather)
                 }
                 weatherDataState.error?.let { error ->
+                    Toast.makeText(requireContext(), error, Toast.LENGTH_SHORT).show()
+                }
+            }
+            dailyForecast.observe(viewLifecycleOwner) { event ->
+                val dailyForecastState = event.getContentIfNotHandled() ?: return@observe
+                binding.swipeRefreshLayout.isRefreshing = dailyForecastState.isLoading
+                dailyForecastState.forecast?.let { forecasts ->
+                    weatherDataAdapterHomepage.submitList(forecasts)
+                }
+                dailyForecastState.error?.let { error ->
                     Toast.makeText(requireContext(), error, Toast.LENGTH_SHORT).show()
                 }
             }
         }
     }
 
-    private fun setWeatherDataAdapter() {
-        binding.weatherDataRecyvlerView.itemAnimator = null
-        binding.weatherDataRecyvlerView.adapter = weatherDataAdapter
+    private fun setDailyForecastAdapter() {
+        binding.recyclerViewDailyForecast.layoutManager = LinearLayoutManager(requireContext())
+        binding.recyclerViewDailyForecast.adapter = weatherDataAdapterHomepage
     }
 
     private fun setCurrentLocation(currentLocation: CurrentLocation? = null) {
-        weatherDataAdapter.setCurrentLocation(currentLocation ?: CurrentLocation())
-        currentLocation?.let { getWeatherData(currentLocation = it) }
+        currentLocation?.let {
+            updateDateAndLocation(it)
+            getWeatherData(currentLocation = it)
+            getDailyForecast(currentLocation = it)
+        }
     }
 
-    private fun getCurrentLocation () {
+    private fun getCurrentLocation() {
         homeViewModel.getCurrentLocation(fusedLocationProviderClient, geocoder)
     }
 
@@ -168,7 +187,8 @@ class HomepageFragment: Fragment() {
 
     private fun showLoading() {
         with(binding) {
-            weatherDataRecyvlerView.visibility = View.GONE
+            layoutCurrentWeather.root.visibility = View.GONE
+            recyclerViewDailyForecast.visibility = View.GONE
             swipeRefreshLayout.isEnabled = false
             swipeRefreshLayout.isRefreshing = true
         }
@@ -176,13 +196,14 @@ class HomepageFragment: Fragment() {
 
     private fun hideLoading() {
         with(binding) {
-            weatherDataRecyvlerView.visibility = View.VISIBLE
+            layoutCurrentWeather.root.visibility = View.VISIBLE
+            recyclerViewDailyForecast.visibility = View.VISIBLE
             swipeRefreshLayout.isEnabled = true
             swipeRefreshLayout.isRefreshing = false
         }
     }
 
-    private fun startManualLocationSearch (){
+    private fun startManualLocationSearch() {
         startListeningManualLocationSelection()
         findNavController().navigate(R.id.action_homepageFragment_to_homeFragment)
     }
@@ -213,4 +234,43 @@ class HomepageFragment: Fragment() {
         }
     }
 
+    private fun getDailyForecast(currentLocation: CurrentLocation) {
+        if (currentLocation.latitude != null && currentLocation.longitude != null) {
+            homeViewModel.getDailyForecast(
+                latitude = currentLocation.latitude,
+                longitude = currentLocation.longitude
+            )
+        }
+    }
+
+    private fun updateCurrentWeatherUI(currentWeather: CurrentWeather) {
+        binding.layoutCurrentWeather.apply {
+            textTemperature.text = "${currentWeather.temperature}°C"
+            imageIcon.load("https:${currentWeather.icon}") { crossfade(true) }
+            textWind.text = "${currentWeather.wind} km/h"
+            textHumidity.text = "${currentWeather.humidity}%"
+            textChanceOfRain.text = "${currentWeather.chanceOfRain}%"
+        }
+    }
+
+    private fun updateDateAndLocation(currentLocation: CurrentLocation? = null) {
+        val dateFormat = SimpleDateFormat("d MMMM yyyy", Locale.getDefault())
+        val currentDate = dateFormat.format(Date())
+        binding.textCurrentDate.text = currentDate
+        binding.textCurrentLocation.text = currentLocation?.location ?: "Choose your location"
+    }
+
+    private fun navigateToHourlyForecast(dailyForecast: DailyForecast) {
+        val bundle = Bundle().apply {
+            putString("date", dailyForecast.date)
+            putDouble("latitude", sharedPreferencesManager.getCurrentLocation()?.latitude ?: 0.0)
+            putDouble("longitude", sharedPreferencesManager.getCurrentLocation()?.longitude ?: 0.0)
+        }
+        findNavController().navigate(R.id.action_homepageFragment_to_homeFragment, bundle)
+    }
+
+    override fun onDestroyView() {
+        super.onDestroyView()
+        _binding = null
+    }
 }

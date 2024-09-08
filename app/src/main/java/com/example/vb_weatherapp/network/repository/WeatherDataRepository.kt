@@ -61,4 +61,9 @@ class WeatherDataRepository(private val weatherAPI: WeatherAPI) {
         val response = weatherAPI.getWeatherData(query = "$latitude, $longitude")
         return if (response.isSuccessful) response.body() else null
     }
+
+    suspend fun getWeeklyForecast(latitude: Double, longitude: Double): RemoteWeatherData? {
+        val response = weatherAPI.getWeatherData(query = "$latitude,$longitude", days = 7)
+        return if (response.isSuccessful) response.body() else null
+    }
 }
