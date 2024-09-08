@@ -205,7 +205,7 @@ class HomepageFragment : Fragment() {
 
     private fun startManualLocationSearch() {
         startListeningManualLocationSelection()
-        findNavController().navigate(R.id.action_homepageFragment_to_homeFragment)
+        findNavController().navigate(R.id.action_homepageFragment_to_locationFragment)
     }
 
     private fun startListeningManualLocationSelection() {
