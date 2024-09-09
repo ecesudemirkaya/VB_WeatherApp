@@ -189,7 +189,7 @@ class HomeFragment: Fragment() {
         setFragmentResultListener(REQUEST_KEY_MANUAL_LOCATION_SEARCH) { _, bundle ->
             stopListeningManualLocationSelection()
             val currentLocation = CurrentLocation(
-            location = bundle.getString(KEY_LOCATION_TEXT) ?: "N/A",
+            location = bundle.getString(KEY_LOCATION_TEXT) ?: "Choose Your Location",
             latitude = bundle.getDouble(KEY_LATITUDE),
             longitude = bundle.getDouble(KEY_LONGITUDE)
             )
