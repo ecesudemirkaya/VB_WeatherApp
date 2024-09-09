@@ -8,4 +8,7 @@
     <string name="search_name">Arama</string>
     <string name="date">Tarih</string>
     <string name="location">Konum</string>
+    <string name="current_location">Anlık Konum</string>
+    <string name="choose_location_method">Konum Tercihini Seç</string>
+    <string name="search_manually">Konum Ara</string>
 </resources>

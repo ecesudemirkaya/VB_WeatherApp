@@ -172,17 +172,22 @@ class HomepageFragment : Fragment() {
     }
 
     private fun showLocationOptions() {
-        val options = arrayOf("Current Location", "Search Manually")
-        AlertDialog.Builder(requireContext()).apply {
-            setTitle("Choose Location Method")
-            setItems(options) { _, which ->
-                when (which) {
-                    0 -> proceedWithCurrentLocation()
-                    1 -> startManualLocationSearch()
-                }
-            }
-            show()
+        val dialogView = layoutInflater.inflate(R.layout.custom_dialog, null)
+        val dialog = AlertDialog.Builder(requireContext())
+            .setView(dialogView)
+            .create()
+
+        dialogView.findViewById<View>(R.id.currentLocationButton).setOnClickListener {
+            dialog.dismiss()
+            proceedWithCurrentLocation()
         }
+
+        dialogView.findViewById<View>(R.id.manualSearchButton).setOnClickListener {
+            dialog.dismiss()
+            startManualLocationSearch()
+        }
+
+        dialog.show()
     }
 
     private fun showLoading() {
@@ -212,7 +217,7 @@ class HomepageFragment : Fragment() {
         setFragmentResultListener(REQUEST_KEY_MANUAL_LOCATION_SEARCH) { _, bundle ->
             stopListeningManualLocationSelection()
             val currentLocation = CurrentLocation(
-                location = bundle.getString(KEY_LOCATION_TEXT) ?: "N/A",
+                location = bundle.getString(KEY_LOCATION_TEXT) ?: "Choose Your Location",
                 latitude = bundle.getDouble(KEY_LATITUDE),
                 longitude = bundle.getDouble(KEY_LONGITUDE)
             )
